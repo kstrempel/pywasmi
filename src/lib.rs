@@ -6,7 +6,7 @@ extern crate cpython;
 use std::collections::HashMap;
 
 use uuid::Uuid;
-use wasmi::{Module, ModuleInstance, ImportsBuilder, ModuleRef, NopExternals, RuntimeValue};
+use wasmi::{Module, ModuleInstance, ImportsBuilder, ModuleRef, NopExternals, RuntimeValue, ExternVal, ValueType};
 use wasmi::nan_preserving_float::{F32, F64};
 use cpython::{Python, PyResult, PythonObject, PyObject, ToPyObject, FromPyObject, PyTuple};
 
@@ -64,30 +64,61 @@ fn create_instance(_: Python, module_id: String) -> PyResult<String> {
     Ok(uuid)
 }
 
-fn create_args(py: Python, args: PyTuple) -> Vec<RuntimeValue> {
+fn create_args(py: Python, args: PyTuple, signature: &[ValueType]) -> Vec<RuntimeValue> {
     let mut result = Vec::new();
-    for arg in args.iter(py) {
+    for (arg, wasm_type) in args.iter(py).zip(signature) {
         let py_type = arg.get_type(py);
         let type_name = py_type.name(py).into_owned();
-
         if type_name == "int" {
-            let i32_ = i32::extract(py, arg).expect("Conversion failed");
-            result.push(RuntimeValue::from(i32_));
+            match wasm_type {
+                ValueType::I32 => {
+                    let i32_ = i32::extract(py, arg).expect("Conversion failed");
+                    result.push(RuntimeValue::from(i32_));
+                },
+                ValueType::I64 => {
+                    let i64_ = i64::extract(py, arg).expect("Conversion failed");
+                    result.push(RuntimeValue::from(i64_));
+                }
+                _ => println!("int type given but not wanted")
+            }
         }        
         if type_name == "float" {
-            let f32_ = f32::extract(py, arg).expect("Conversion failed");
-            result.push(RuntimeValue::from(F32::from_float(f32_)));
-        }
+            match wasm_type {
+                ValueType::F32 => {
+                    let f32_ = f32::extract(py, arg).expect("Conversion failed");
+                    result.push(RuntimeValue::from(F32::from_float(f32_)));
+                },
+                ValueType::F64 => {
+                    let f64_ = f64::extract(py, arg).expect("Conversion failed");
+                    result.push(RuntimeValue::from(F64::from_float(f64_)));
+                }
+                _ => println!("int type given but not wanted")
+            }
+        }        
     }
 
     result
 }
 
+fn get_params<'a>(signature: &'a Option<ExternVal>) -> &'a [ValueType] {
+    if let Some(signature) = signature {
+        if let ExternVal::Func(signature) = signature {
+            return signature.signature().params();
+        }
+    }
+    &[]
+}
+
+
 fn invoke_export(py: Python, instance_id: String, method: String, args: PyTuple) -> PyResult<PyObject> {
     unsafe {
         if let Some(ref i) = INSTANCES {
             let instance = i.get(&instance_id).expect("Unknonw instance id");
-            let args = create_args(py, args);
+
+            let function = instance.export_by_name(&method);
+            let signature = get_params(&function);
+            let args = create_args(py, args, signature);
+
             let result = instance.invoke_export(
                 &method,
                 &args,
