@@ -4,3 +4,4 @@ Cargo.lock
 /venv/
 *.pyc
 *.so
+.vscode/settings.json

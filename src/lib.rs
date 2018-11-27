@@ -7,7 +7,8 @@ use std::collections::HashMap;
 
 use uuid::Uuid;
 use wasmi::{Module, ModuleInstance, ImportsBuilder, ModuleRef, NopExternals, RuntimeValue};
-use cpython::{Python, PyResult, PythonObject, PyObject, ToPyObject, PyErr};
+use wasmi::nan_preserving_float::{F32, F64};
+use cpython::{Python, PyResult, PythonObject, PyObject, ToPyObject, FromPyObject, PyTuple};
 
 type ModulesMap = HashMap<String, Module>;
 type OptionModulesMap = Option<ModulesMap>;
@@ -23,7 +24,7 @@ py_module_initializer!(pywasmi_lib, initpywasmi_lib, PyInit_pywasmi_lib, |py, m|
     m.add(py, "__doc__", "This module is implemented in Rust.")?;
     m.add(py, "module_from_buffer", py_fn!(py, module_from_buffer(buffer: Vec<u8>)))?;
     m.add(py, "create_instance", py_fn!(py, create_instance(module_id: String)))?;
-    m.add(py, "invoke_export", py_fn!(py, invoke_export(instance_id: String, method: String)))?;
+    m.add(py, "invoke_export", py_fn!(py, invoke_export(instance_id: String, method: String, args: PyTuple)))?;
     unsafe {
         MODULES = Some(ModulesMap::new());
         INSTANCES = Some(InstanceMap::new());
@@ -63,13 +64,33 @@ fn create_instance(_: Python, module_id: String) -> PyResult<String> {
     Ok(uuid)
 }
 
-fn invoke_export(py: Python, instance_id: String, method: String) -> PyResult<PyObject> {
+fn create_args(py: Python, args: PyTuple) -> Vec<RuntimeValue> {
+    let mut result = Vec::new();
+    for arg in args.iter(py) {
+        let py_type = arg.get_type(py);
+        let type_name = py_type.name(py).into_owned();
+
+        if type_name == "int" {
+            let i32_ = i32::extract(py, arg).expect("Conversion failed");
+            result.push(RuntimeValue::from(i32_));
+        }        
+        if type_name == "float" {
+            let f32_ = f32::extract(py, arg).expect("Conversion failed");
+            result.push(RuntimeValue::from(F32::from_float(f32_)));
+        }
+    }
+
+    result
+}
+
+fn invoke_export(py: Python, instance_id: String, method: String, args: PyTuple) -> PyResult<PyObject> {
     unsafe {
         if let Some(ref i) = INSTANCES {
             let instance = i.get(&instance_id).expect("Unknonw instance id");
+            let args = create_args(py, args);
             let result = instance.invoke_export(
                 &method,
-                &[],
+                &args,
                 &mut NopExternals).expect("Failed to execute export");
             
             if let Some(result) = result {

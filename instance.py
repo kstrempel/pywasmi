@@ -12,5 +12,5 @@ class WASMInstance:
         
         return result
 
-    def invoke(self, method):
-        return lib.invoke_export(self._id, method)
+    def invoke(self, method, *args):
+        return lib.invoke_export(self._id, method, args)
