@@ -6,8 +6,8 @@ extern crate cpython;
 use std::collections::HashMap;
 
 use uuid::Uuid;
-use wasmi::{Module, ModuleInstance, ImportsBuilder, ModuleRef, NopExternals};
-use cpython::{Python, PyResult};
+use wasmi::{Module, ModuleInstance, ImportsBuilder, ModuleRef, NopExternals, RuntimeValue};
+use cpython::{Python, PyResult, PythonObject, PyObject, ToPyObject, PyErr};
 
 type ModulesMap = HashMap<String, Module>;
 type OptionModulesMap = Option<ModulesMap>;
@@ -63,7 +63,7 @@ fn create_instance(_: Python, module_id: String) -> PyResult<String> {
     Ok(uuid)
 }
 
-fn invoke_export(_: Python, instance_id: String, method: String) -> PyResult<String> {
+fn invoke_export(py: Python, instance_id: String, method: String) -> PyResult<PyObject> {
     unsafe {
         if let Some(ref i) = INSTANCES {
             let instance = i.get(&instance_id).expect("Unknonw instance id");
@@ -72,11 +72,16 @@ fn invoke_export(_: Python, instance_id: String, method: String) -> PyResult<Str
                 &[],
                 &mut NopExternals).expect("Failed to execute export");
             
-            if let Some(_result) = result {
-                return Ok(String::from("Works"));
+            if let Some(result) = result {
+                match result {
+                    RuntimeValue::I32(i) => return Ok(i.to_py_object(py).into_object()),
+                    RuntimeValue::I64(l) => return Ok(l.to_py_object(py).into_object()),
+                    RuntimeValue::F32(f) => return Ok(f.to_float().to_py_object(py).into_object()),
+                    RuntimeValue::F64(d) => return Ok(d.to_float().to_py_object(py).into_object())
+                }            
             }
         }
     }
-    Ok(String::from("Failed"))
+    Ok("hello".to_py_object(py).into_object())
 }
 
