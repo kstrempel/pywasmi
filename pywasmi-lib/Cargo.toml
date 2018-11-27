@@ -1,0 +1,16 @@
+[package]
+name = "pywasmi-lib"
+version = "0.1.0"
+authors = ["kai"]
+
+[dependencies]
+wasmi = "0.4.2"
+uuid = { version = "0.7", features = ["serde", "v4"] }
+
+[dependencies.cpython]
+version = "0.2"
+features = ["extension-module"]
+
+[lib]
+name = "pywasmi_lib"
+crate-type = ["cdylib"]
