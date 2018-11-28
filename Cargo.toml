@@ -5,10 +5,10 @@ authors = ["kai"]
 
 [dependencies]
 wasmi = "0.4.2"
-uuid = { version = "0.7", features = ["serde", "v4"] }
+uuid = { version = "0.7", features = ["v4"] }
 
-[dependencies.cpython]
-version = "0.2"
+[dependencies.pyo3]
+version = "0.5.1"
 features = ["extension-module"]
 
 [lib]
