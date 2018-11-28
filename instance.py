@@ -1,4 +1,4 @@
-import pywasmi.pywasmi_lib as lib
+import pywasmi_lib as lib
 
 
 class WASMInstance:
