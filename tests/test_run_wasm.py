@@ -19,33 +19,33 @@ def test_run_add_i32():
     wasm_module = WASMModule.from_file('tests/data/add_i32.wasm')
     wasm_instance = wasm_module.create_instance()
     assert wasm_instance != None
-    result = wasm_instance.invoke("add", 10, 20)
+    result = wasm_instance.invoke("add", (10, 20))
     assert 30 == result
 
 def test_run_add_i64():
     wasm_module = WASMModule.from_file('tests/data/add_i64.wasm')
     wasm_instance = wasm_module.create_instance()
     assert wasm_instance != None
-    result = wasm_instance.invoke("add", 10, 20)
+    result = wasm_instance.invoke("add", (10, 20))
     assert 30 == result
 
 def test_run_add_f32():
     wasm_module = WASMModule.from_file('tests/data/add_f32.wasm')
     wasm_instance = wasm_module.create_instance()
     assert wasm_instance != None
-    result = wasm_instance.invoke("add", 10.5, 21.0)
+    result = wasm_instance.invoke("add", (10.5, 21.0))
     assert 31.5 == result
 
 def test_run_add_f64():
     wasm_module = WASMModule.from_file('tests/data/add_f64.wasm')
     wasm_instance = wasm_module.create_instance()
     assert wasm_instance != None
-    result = wasm_instance.invoke("add", 10.5, 21.0)
+    result = wasm_instance.invoke("add", (10.5, 21.0))
     assert 31.5 == result
 
 def test_run_add_fact():
     wasm_module = WASMModule.from_file('tests/data/fact.wasm')
     wasm_instance = wasm_module.create_instance()
     assert wasm_instance != None
-    result = wasm_instance.invoke("fac", 20)
+    result = wasm_instance.invoke("fac", (20,))
     assert 2432902008176640000 == result
