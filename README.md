@@ -1,6 +1,6 @@
 # PYWASMI #
 
-[![Build Status](https://dev.azure.com/kstrempel/kstrempel/_apis/build/status/kstrempel.pywasmi)](https://dev.azure.com/kstrempel/kstrempel/_build/latest?definitionId=1)
+[![Build Status](https://dev.azure.com/kstrempel/kstrempel/_apis/build/status/kstrempel.pywasmi)](https://dev.azure.com/kstrempel/kstrempel/_build/latest?definitionId=1)[![PyPI version](https://badge.fury.io/py/pywasmi.svg)](https://badge.fury.io/py/pywasmi)
 
 Calling WASM from python using the WASM interpreter from [parity.io](https://github.com/paritytech/wasmi).
 
@@ -34,7 +34,7 @@ assert 31.5 == result
   * [x] with `i64` as arguments or returned value,
   * [x] with `f32` as arguments or returned value,
   * [x] with `f64` as arguments or returned value.
-*  [] Invoke function with ```__call__```
+* [ ] Invoke function with ```__call__```
 * [ ] Expose memory:
   * [ ] Readable array view,
   * [ ] Writable array view.
