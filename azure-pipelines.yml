@@ -12,9 +12,28 @@ steps:
   displayName: 'Install rust nightly'
 
 - script: |
-    cargo install pyo3-pack
+    sudo apt-get install python-setuptools python-virtualenv
+  displayName: 'Install setuptools'
+
+- script: |
+    PATH="$HOME/.cargo/bin:$PATH" cargo install pyo3-pack
   displayName: 'Install pyo3-pack'
 
 - script: |
+    virtualenv venv
+  displayName: 'Create virtualenv'
+
+- script: |
+    . ./venv/bin/activate
     pip install -r requirements.txt
-  displayName: 'Install pyo3-pack'
+  displayName: 'Install python requirements'
+
+- script: |
+    . ./venv/bin/activate
+    PATH="$HOME/.cargo/bin:$PATH" pyo3-pack develop
+  displayName: 'Run pyo3-pack'
+
+- script: |
+    . ./venv/bin/activate
+    pytest tests
+  displayName: 'Running pytest'
