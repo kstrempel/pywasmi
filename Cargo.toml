@@ -1,7 +1,7 @@
 [package]
-name = "pywasmib"
-version = "0.1.0"
-authors = ["kai"]
+name = "pywasmi"
+version = "0.6.0"
+authors = ["Kai Strempel <kstrempel@gmail.com>"]
 
 [dependencies]
 wasmi = "0.4.2"
