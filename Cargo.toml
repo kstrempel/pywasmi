@@ -1,5 +1,5 @@
 [package]
-name = "pywasmi-lib"
+name = "pywasmib"
 version = "0.1.0"
 authors = ["kai"]
 
@@ -8,9 +8,9 @@ wasmi = "0.4.2"
 uuid = { version = "0.7", features = ["v4"] }
 
 [dependencies.pyo3]
-version = "0.5.1"
+version = "0.5.2"
 features = ["extension-module"]
 
 [lib]
-name = "pywasmi_lib"
+name = "pywasmi"
 crate-type = ["cdylib"]
