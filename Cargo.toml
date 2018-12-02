@@ -5,7 +5,6 @@ authors = ["Kai Strempel <kstrempel@gmail.com>"]
 
 [dependencies]
 wasmi = "0.4.2"
-uuid = { version = "0.7", features = ["v4"] }
 
 [dependencies.pyo3]
 version = "0.5.2"
