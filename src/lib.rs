@@ -11,6 +11,7 @@ use pyo3::prelude::*;
 use self::instance::WASMInstance;
 use self::module::WASMModule;
 
+
 #[pymodinit]
 fn pywasmi(_py: Python, m: &PyModule) -> PyResult<()> {
 
