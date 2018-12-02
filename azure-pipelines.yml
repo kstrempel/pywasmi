@@ -7,6 +7,11 @@ pool:
   vmImage: 'Ubuntu 16.04'
 
 steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.6'
+    architecture: 'x64'
+
 - script: |
     curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
   displayName: 'Install rust nightly'
@@ -20,7 +25,7 @@ steps:
   displayName: 'Install pyo3-pack'
 
 - script: |
-    virtualenv venv
+    virtualenv -p python3.6 venv
   displayName: 'Create virtualenv'
 
 - script: |
