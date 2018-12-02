@@ -30,16 +30,15 @@ impl WASMInstance {
         let py = gil.python();        
 
         if let Some(result) = result {
-
             match result {
-                RuntimeValue::I32(i) => return Ok(i.to_object(py).into_object(py)),
-                RuntimeValue::I64(l) => return Ok(l.to_object(py).into_object(py)),
-                RuntimeValue::F32(f) => return Ok(f.to_float().to_object(py).into_object(py)),
-                RuntimeValue::F64(d) => return Ok(d.to_float().to_object(py).into_object(py))
+                RuntimeValue::I32(i) => return Ok(i.to_object(py)),
+                RuntimeValue::I64(l) => return Ok(l.to_object(py)),
+                RuntimeValue::F32(f) => return Ok(f.to_float().to_object(py)),
+                RuntimeValue::F64(d) => return Ok(d.to_float().to_object(py))
             }            
         }
 
-        Ok("hello".to_object(py).into_object(py))
+        Ok("hello".to_object(py))
     }
 }
 
