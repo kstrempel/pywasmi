@@ -1,10 +1,10 @@
-# PYWASMI #
+# PyWASMI #
 
 [![Build Status](https://dev.azure.com/kstrempel/kstrempel/_apis/build/status/kstrempel.pywasmi)](https://dev.azure.com/kstrempel/kstrempel/_build/latest?definitionId=1)[![PyPI version](https://badge.fury.io/py/pywasmi.svg)](https://badge.fury.io/py/pywasmi)
 
 Calling WASM from python using the WASM interpreter from [parity.io](https://github.com/paritytech/wasmi).
 
-## USING IT ##
+## How to use ##
 
 This package contains two python classes ( developed in rust using [pyo3](https://github.com/PyO3/) ).
 
@@ -25,7 +25,7 @@ assert 31.5 == result
 ```
 
 
-## PLANNING ###
+## TODO ###
 
 * [x] Read a WASM binary,
 * [x] Instanciate a WASM binary,
@@ -35,6 +35,7 @@ assert 31.5 == result
   * [x] with `f32` as arguments or returned value,
   * [x] with `f64` as arguments or returned value.
 * [ ] Invoke function with ```__call__```
+* [ ] Better exception handling
 * [ ] Expose memory:
   * [ ] Readable array view,
   * [ ] Writable array view.
