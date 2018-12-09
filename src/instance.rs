@@ -17,7 +17,27 @@ impl WASMInstance {
         if let Some(tuple) = py_args {
             let function = self.instance.export_by_name(&method);
             let signature = get_params(&function);
-            args = create_args(tuple, signature);
+            args = tuple.iter()
+                        .zip(signature)
+                        .map_ok(|(arg, &wasm_type)| match wasm_type {
+                            ValueType::I32 => {
+                                let i32_ = i32::extract(&arg)?;
+                                return Ok(RuntimeValue::from(i32_));
+                            }
+                            ValueType::I64 => {
+                                let i64_ = i64::extract(&arg)?;
+                                return Ok(RuntimeValue::from(i64_));
+                            }
+                            ValueType::F32 => {
+                                let f32_ = f32::extract(&arg)?;
+                                return Ok(RuntimeValue::from(F32::from_float(f32_)));
+                            }
+                            ValueType::F64 => {
+                                let f64_ = f64::extract(&arg)?;
+                                return Ok(RuntimeValue::from(F64::from_float(f64_)));
+                            }
+                        })
+                        .collect();
         }
 
         let result = self
@@ -41,29 +61,6 @@ impl WASMInstance {
     }
 }
 
-fn create_args(args: &PyTuple, signature: &[ValueType]) -> Vec<RuntimeValue> {
-    args.iter()
-        .zip(signature)
-        .map(|(arg, &wasm_type)| match wasm_type {
-            ValueType::I32 => {
-                let i32_ = i32::extract(&arg).expect("Conversion failed");
-                return RuntimeValue::from(i32_);
-            }
-            ValueType::I64 => {
-                let i64_ = i64::extract(&arg).expect("Conversion failed");
-                return RuntimeValue::from(i64_);
-            }
-            ValueType::F32 => {
-                let f32_ = f32::extract(&arg).expect("Conversion failed");
-                return RuntimeValue::from(F32::from_float(f32_));
-            }
-            ValueType::F64 => {
-                let f64_ = f64::extract(&arg).expect("Conversion failed");
-                return RuntimeValue::from(F64::from_float(f64_));
-            }
-        })
-        .collect()
-}
 
 fn get_params<'a>(signature: &'a Option<ExternVal>) -> &'a [ValueType] {
     if let Some(signature) = signature {
