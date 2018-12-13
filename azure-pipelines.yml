@@ -13,12 +13,13 @@ steps:
     architecture: 'x64'
 
 - script: |
-    curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
-  displayName: 'Install rust nightly'
+    sudo apt-cache search openssl
+    sudo apt-get install python-setuptools python-virtualenv libssl-dev
+  displayName: 'Install setuptools'
 
 - script: |
-    sudo apt-get install python-setuptools python-virtualenv
-  displayName: 'Install setuptools'
+    curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
+  displayName: 'Install rust nightly'
 
 - script: |
     PATH="$HOME/.cargo/bin:$PATH" cargo install pyo3-pack
