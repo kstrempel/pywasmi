@@ -12,13 +12,11 @@ pub struct WASMInstance {
 
 #[pymethods]
 impl WASMInstance {
-    fn invoke(&self, method: String, py_args: Option<&PyTuple>) -> PyResult<PyObject> {
-        let mut args = Vec::new();
-        if let Some(tuple) = py_args {
-            let function = self.instance.export_by_name(&method);
-            let signature = get_params(&function);
-            args = create_args(tuple, signature);
-        }
+    #[args(args="*")]
+    fn invoke(&self, method: String, args: &PyTuple) -> PyResult<PyObject> {
+        let function = self.instance.export_by_name(&method);
+        let signature = get_params(&function);
+        let args = create_args(args, signature);
 
         let result = self
             .instance
@@ -43,6 +41,7 @@ impl WASMInstance {
 
 fn create_args(args: &PyTuple, signature: &[ValueType]) -> Vec<RuntimeValue> {
     args.iter()
+        .skip(1)
         .zip(signature)
         .map(|(arg, &wasm_type)| match wasm_type {
             ValueType::I32 => {
